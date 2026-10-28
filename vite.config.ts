@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(() => {
+export default defineConfig(({ command, mode }) => {
+  const isProduction = mode === 'production' || command === 'build';
   return {
+    base: isProduction ? '/A4-T-Power-Solutions/' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

@@ -1,13 +1,27 @@
 import React from 'react';
 import { WHY_SOLAR_REASONS } from '../data/solarData';
-import { CheckCircle, Sliders, BatteryMedium, Sparkles } from 'lucide-react';
+import { Sliders, BatteryMedium, Sparkles } from 'lucide-react';
+import whySolarSunset from '../assets/images/why_solar_sunset_backdrop_1793230332881.jpg';
 
 export const WhySolar: React.FC = () => {
   return (
     <section className="py-20 lg:py-28 bg-slate-950 text-white relative overflow-hidden">
+      {/* Blurred Background Image with Scrims */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <img
+          src={whySolarSunset}
+          alt="Atmospheric sunset reflecting on solar panels"
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover object-center scale-110 filter blur-md opacity-35"
+        />
+        {/* Deep navy scrims to maintain WCAG AA text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/95 via-slate-950/85 to-slate-950/95" />
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-slate-950/40 to-slate-950/90" />
+      </div>
+
       {/* Decorative ambient gradients */}
-      <div className="absolute top-1/4 left-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
@@ -28,7 +42,7 @@ export const WhySolar: React.FC = () => {
           {WHY_SOLAR_REASONS.map((reason) => (
             <div
               key={reason.number}
-              className="bg-slate-900/90 border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition-colors"
+              className="bg-slate-900/80 backdrop-blur-md border border-slate-800/90 rounded-2xl p-8 hover:border-slate-700/90 hover:bg-slate-900/90 transition-all"
             >
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-amber-400 font-mono text-sm font-bold">
@@ -47,7 +61,7 @@ export const WhySolar: React.FC = () => {
         </div>
 
         {/* Practical Comparison Strip */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8">
+        <div className="rounded-2xl border border-slate-800/90 bg-slate-900/70 backdrop-blur-md p-6 sm:p-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-1">
               <h4 className="text-lg font-bold text-white mb-1">

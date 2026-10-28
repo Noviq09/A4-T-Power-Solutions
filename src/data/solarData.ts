@@ -1,4 +1,8 @@
 import { ServiceItem, GalleryProject } from '../types';
+import commercialSolarImg from '../assets/images/commercial_solar_rooftop_1793228977451.jpg';
+import inverterBatteryImg from '../assets/images/inverter_battery_storage_1793228978668.jpg';
+import residentialSolarImg from '../assets/images/residential_solar_villa_1793228978292.jpg';
+import solarMaintenanceImg from '../assets/images/solar_maintenance_inspection_1793228978988.jpg';
 
 export const SERVICES: ServiceItem[] = [
   {
@@ -63,7 +67,7 @@ export const GALLERY_PROJECTS: GalleryProject[] = [
     title: 'Commercial Rooftop PV Array',
     category: 'commercial',
     categoryLabel: 'Commercial Solar',
-    image: '/src/assets/images/commercial_solar_rooftop_1793228977451.jpg',
+    image: commercialSolarImg,
     description: 'Proposed layout for a multi-story commercial complex utilizing distributed rooftop photovoltaic modules to offset daytime operational demand.',
     systemProfile: 'Multi-string solar array with commercial three-phase inverters',
     featureTag: 'Commercial Facility'
@@ -73,7 +77,7 @@ export const GALLERY_PROJECTS: GalleryProject[] = [
     title: 'Modular Lithium Storage & Inverter Room',
     category: 'storage',
     categoryLabel: 'Battery Storage',
-    image: '/src/assets/images/inverter_battery_storage_1793228978668.jpg',
+    image: inverterBatteryImg,
     description: 'Centralized power management room featuring modular wall-mounted lithium energy storage units and coordinated hybrid inverters.',
     systemProfile: 'LiFePO4 battery bank with intelligent thermal regulation',
     featureTag: 'Energy Storage Room'
@@ -83,7 +87,7 @@ export const GALLERY_PROJECTS: GalleryProject[] = [
     title: 'Contemporary Residential Solar Villa',
     category: 'residential',
     categoryLabel: 'Residential Solar',
-    image: '/src/assets/images/residential_solar_villa_1793228978292.jpg',
+    image: residentialSolarImg,
     description: 'Architecturally integrated rooftop solar system designed for whole-home uninterrupted power, swimming pool filtration, and climate control.',
     systemProfile: 'Hybrid rooftop configuration with automatic changeover',
     featureTag: 'Private Residence'
@@ -93,7 +97,7 @@ export const GALLERY_PROJECTS: GalleryProject[] = [
     title: 'Commercial Array Diagnostic Inspection',
     category: 'maintenance',
     categoryLabel: 'Maintenance & Audit',
-    image: '/src/assets/images/solar_maintenance_inspection_1793228978988.jpg',
+    image: solarMaintenanceImg,
     description: 'Field diagnostic routine testing module string voltages, infrared panel thermography, and structural safety on high-density solar arrays.',
     systemProfile: 'Preventative inspection and diagnostic verification protocol',
     featureTag: 'Field Operations'

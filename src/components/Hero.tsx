@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowDown, ArrowUpRight, Zap, Shield, SunMedium } from 'lucide-react';
+import heroSolarArray from '../assets/images/hero_solar_array_1793228976979.jpg';
 
 interface HeroProps {
   onRequestQuote: () => void;
@@ -14,7 +15,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestQuote }) => {
       {/* Background Image with Fallback and Measured Gradient Scrim */}
       <div className="absolute inset-0 z-0 bg-slate-900">
         <img
-          src="/src/assets/images/hero_solar_array_1793228976979.jpg"
+          src={heroSolarArray}
           alt="Modern solar panel array on contemporary building under bright sun"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center scale-105 transition-transform duration-1000 ease-out"
