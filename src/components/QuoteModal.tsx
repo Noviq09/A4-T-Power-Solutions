@@ -61,6 +61,9 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
     try {
       const data = new FormData();
+      data.append('access_key', '747f4dac-4ae0-4052-b8b8-83f9aa7d3f1a');
+      data.append('subject', `Solar Quote Request: ${formData.service} (${formData.buildingType})`);
+      data.append('from_name', 'A4&T Power Solutions Portal');
       data.append('form_name', 'Request a Solar & Power Quote Modal');
       data.append('name', formData.name.trim());
       data.append('phone', formData.phone.trim());
@@ -69,7 +72,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       data.append('buildingType', formData.buildingType);
       data.append('briefNotes', formData.briefNotes.trim() || 'No additional notes provided.');
 
-      const response = await fetch('https://formspree.io/f/xdeedvez', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -77,22 +80,16 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
         body: data,
       });
 
-      if (response.ok) {
+      const resData = await response.json().catch(() => null);
+
+      if (response.ok && resData && resData.success) {
         setIsSubmitting(false);
         setSubmitted(true);
       } else {
-        const resData = await response.json().catch(() => null);
-        let errorMsg = 'Failed to submit quote request. Please check your details and try again.';
-        if (resData && Array.isArray(resData.errors) && resData.errors.length > 0) {
-          errorMsg = resData.errors
-            .map((err: { field?: string; message?: string }) =>
-              err.field ? `${err.field}: ${err.message}` : err.message
-            )
-            .filter(Boolean)
-            .join(', ') || errorMsg;
-        } else if (resData && typeof resData.error === 'string') {
-          errorMsg = resData.error;
-        }
+        const errorMsg =
+          (resData && typeof resData.message === 'string' && resData.message)
+            ? resData.message
+            : 'Failed to submit quote request. Please check your details and try again.';
         setIsSubmitting(false);
         setSubmitError(errorMsg);
       }

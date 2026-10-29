@@ -67,6 +67,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
 
     try {
       const data = new FormData();
+      data.append('access_key', '747f4dac-4ae0-4052-b8b8-83f9aa7d3f1a');
+      data.append('subject', `Solar Feasibility Enquiry: ${formData.serviceRequired}`);
+      data.append('from_name', 'A4&T Power Solutions Portal');
       data.append('form_name', 'Main Contact & Feasibility Form');
       data.append('name', formData.fullName.trim());
       data.append('fullName', formData.fullName.trim());
@@ -76,7 +79,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
       data.append('locationState', formData.locationState.trim() || 'Not specified');
       data.append('message', formData.message.trim());
 
-      const response = await fetch('https://formspree.io/f/xdeedvez', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -84,22 +87,16 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
         body: data,
       });
 
-      if (response.ok) {
+      const resData = await response.json().catch(() => null);
+
+      if (response.ok && resData && resData.success) {
         setIsSubmitting(false);
         setSubmitted(true);
       } else {
-        const data = await response.json().catch(() => null);
-        let errorMsg = 'Failed to submit enquiry. Please check your details and try again.';
-        if (data && Array.isArray(data.errors) && data.errors.length > 0) {
-          errorMsg = data.errors
-            .map((err: { field?: string; message?: string }) =>
-              err.field ? `${err.field}: ${err.message}` : err.message
-            )
-            .filter(Boolean)
-            .join(', ') || errorMsg;
-        } else if (data && typeof data.error === 'string') {
-          errorMsg = data.error;
-        }
+        const errorMsg =
+          (resData && typeof resData.message === 'string' && resData.message)
+            ? resData.message
+            : 'Failed to submit enquiry. Please check your details and try again.';
         setIsSubmitting(false);
         setSubmitError(errorMsg);
       }
@@ -401,7 +398,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                       {isSubmitting ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
-                          <span>Sending to Formspree...</span>
+                          <span>Sending Request...</span>
                         </>
                       ) : (
                         <>
@@ -411,7 +408,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                       )}
                     </button>
                     <p className="text-[11px] text-slate-500 mt-2">
-                      Your enquiry will be securely transmitted directly to our team via Formspree.
+                      Your enquiry will be securely transmitted directly to our team.
                     </p>
                   </div>
                 </form>
