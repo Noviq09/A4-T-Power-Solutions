@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GALLERY_PROJECTS } from '../data/solarData';
 import { GalleryProject } from '../types';
 import { Maximize2, X, ArrowUpRight } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 interface ProjectGalleryProps {
   onRequestQuote: () => void;
@@ -27,7 +28,7 @@ export const ProjectGallery: React.FC<ProjectGalleryProps> = ({ onRequestQuote }
     <section id="projects" className="py-20 lg:py-28 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <ScrollReveal className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="max-w-2xl">
             <div className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-3">
               Project Gallery Concept
@@ -47,25 +48,23 @@ export const ProjectGallery: React.FC<ProjectGalleryProps> = ({ onRequestQuote }
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveFilter(tab.id)}
-                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   activeFilter === tab.id
                     ? 'bg-white text-slate-950 shadow-sm border border-slate-200/80'
-                    : 'text-slate-600 hover:text-slate-950'
+                    : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
                 }`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 flex flex-col"
-            >
+          {filteredProjects.map((project, index) => (
+            <ScrollReveal key={project.id} delayMs={index * 120} className="h-full">
+              <div className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 hover:-translate-y-1.5 transition-all duration-300 ease-out flex flex-col h-full">
               {/* Image Frame with Overlay */}
               <div className="relative aspect-4/3 sm:aspect-16/10 bg-slate-900 overflow-hidden">
                 <img
@@ -122,7 +121,8 @@ export const ProjectGallery: React.FC<ProjectGalleryProps> = ({ onRequestQuote }
                 </div>
               </div>
             </div>
-          ))}
+          </ScrollReveal>
+        ))}
         </div>
 
         {/* Gallery Disclaimer */}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle2, ShieldCheck, Compass, Gauge } from 'lucide-react';
+import { ScrollReveal } from './ScrollReveal';
 
 export const About: React.FC = () => {
   return (
@@ -7,7 +8,7 @@ export const About: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column: Mission & Positioning */}
-          <div className="lg:col-span-7">
+          <ScrollReveal className="lg:col-span-7">
             <div className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-3">
               About A4&amp;T Power Solutions
             </div>
@@ -57,11 +58,11 @@ export const About: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right Column: Visual Card Highlight */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 text-white p-8 sm:p-10 shadow-xl">
+          <ScrollReveal delayMs={150} className="lg:col-span-5">
+            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 text-white p-8 sm:p-10 shadow-xl hover:shadow-2xl transition-all duration-300">
               {/* Subtle ambient lighting */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -98,7 +99,7 @@ export const About: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

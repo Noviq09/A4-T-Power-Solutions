@@ -62,10 +62,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestQuote }) => {
           <div className="flex items-center gap-4 shrink-0">
             <button
               onClick={onRequestQuote}
-              className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 rounded-lg transition-colors whitespace-nowrap shrink-0 shadow-sm shadow-amber-950/20"
+              className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 rounded-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 hover:shadow-md hover:shadow-amber-500/20 whitespace-nowrap shrink-0 shadow-sm shadow-amber-950/20 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
             >
               <span>Request a Quote</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
 
             {/* Mobile Hamburger Button */}

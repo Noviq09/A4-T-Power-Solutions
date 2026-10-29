@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, MessageCircle, AlertCircle, Phone, Mail, MapPin } from 'lucide-react';
+import { Send, CheckCircle2, MessageCircle, AlertCircle, Phone, Mail, MapPin, Loader2 } from 'lucide-react';
 import { SERVICES } from '../data/solarData';
+import { ScrollReveal } from './ScrollReveal';
 
 interface ContactSectionProps {
   initialService?: string;
@@ -19,10 +20,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Configurable WhatsApp placeholder
-  const [whatsappNumber, setWhatsappNumber] = useState('2340000000000');
-  const isPlaceholderNumber = whatsappNumber === '2340000000000';
+  // Official WhatsApp destination number (07079340080 converted to international format)
+  const whatsappNumber = '2347079340080';
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -50,8 +51,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -59,13 +62,50 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
     }
 
     setErrors({});
+    setSubmitError(null);
     setIsSubmitting(true);
 
-    // Simulate static demo processing
-    setTimeout(() => {
+    try {
+      const response = await fetch('https://formspree.io/f/xdeedvez', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.fullName,
+          fullName: formData.fullName,
+          phone: formData.phone,
+          email: formData.email,
+          serviceRequired: formData.serviceRequired,
+          locationState: formData.locationState || 'Not specified',
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      } else {
+        const data = await response.json().catch(() => null);
+        let errorMsg = 'Failed to submit enquiry. Please check your details and try again.';
+        if (data && Array.isArray(data.errors) && data.errors.length > 0) {
+          errorMsg = data.errors
+            .map((err: { field?: string; message?: string }) =>
+              err.field ? `${err.field}: ${err.message}` : err.message
+            )
+            .filter(Boolean)
+            .join(', ') || errorMsg;
+        } else if (data && typeof data.error === 'string') {
+          errorMsg = data.error;
+        }
+        setIsSubmitting(false);
+        setSubmitError(errorMsg);
+      }
+    } catch {
       setIsSubmitting(false);
-      setSubmitted(true);
-    }, 600);
+      setSubmitError('Unable to connect to the form service. Please check your internet connection or use WhatsApp to reach out.');
+    }
   };
 
   const resetForm = () => {
@@ -77,16 +117,20 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
       locationState: '',
       message: '',
     });
+    setErrors({});
+    setSubmitError(null);
     setSubmitted(false);
   };
 
-  // WhatsApp prefilled link generator
-  const getWhatsAppLink = () => {
-    const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
-    const prefilledText = encodeURIComponent(
-      `Hello A4&T Power Solutions team,\n\nI would like to inquire about: ${formData.serviceRequired || 'Solar Energy Solutions'}.\nName: ${formData.fullName || '[Your Name]'}\nLocation: ${formData.locationState || '[Your State/City]'}\nDetails: ${formData.message || 'Please provide information on sizing and quote estimates.'}`
-    );
-    return `https://wa.me/${cleanNumber}?text=${prefilledText}`;
+  // Open WhatsApp Chat link with exact pre-filled message (https://wa.me/2347079340080?text=...)
+  const prefilledWhatsAppMessage =
+    'Hello A4&T Power Solutions, I’m interested in your solar power solutions. Please provide me with more information about your products and services.';
+  const openWhatsAppChatUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(prefilledWhatsAppMessage)}`;
+
+  // Forward submitted details to WhatsApp if clicked from the confirmation screen
+  const getSuccessWhatsAppLink = () => {
+    const text = `Hello A4&T Power Solutions,\n\nI submitted an enquiry on your website.\nName: ${formData.fullName}\nService: ${formData.serviceRequired}\nPhone: ${formData.phone}\nLocation: ${formData.locationState || 'Not specified'}\nDetails: ${formData.message}`;
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
   };
 
   return (
@@ -94,7 +138,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           {/* Left Column: Direct Consultation Info & WhatsApp Card */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
+          <ScrollReveal className="lg:col-span-5 flex flex-col justify-between">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-3">
                 Connect With Us
@@ -119,7 +163,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
 
               {/* Direct Reach Out Cards */}
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-white border border-slate-200/80 flex items-start gap-3">
+                <div className="p-4 rounded-xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-sm transition-all duration-200 flex items-start gap-3">
                   <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
@@ -129,25 +173,22 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white border border-slate-200/80 flex items-start gap-3">
+                <div className="p-4 rounded-xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-sm transition-all duration-200 flex items-start gap-3">
                   <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                     <MessageCircle className="w-4 h-4" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Instant WhatsApp Enquiry</h4>
-                      {isPlaceholderNumber && (
-                        <span className="text-[10px] text-slate-600 font-mono">Placeholder</span>
-                      )}
                     </div>
                     <p className="text-xs text-slate-600 mt-0.5 mb-2">
                       Send your power specifications directly via WhatsApp.
                     </p>
                     <a
-                      href={getWhatsAppLink()}
+                      href={openWhatsAppChatUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 shadow-sm"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
                       <span>Open WhatsApp Chat</span>
@@ -156,30 +197,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                 </div>
               </div>
             </div>
-
-            {/* Configurable Number Settings (Transparency feature) */}
-            <div className="mt-8 pt-6 border-t border-slate-200 text-xs text-slate-500">
-              <label htmlFor="wa-config" className="block font-medium text-slate-700 mb-1">
-                WhatsApp Destination Number (Configurable for Review):
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="wa-config"
-                  type="text"
-                  value={whatsappNumber}
-                  onChange={(e) => setWhatsappNumber(e.target.value)}
-                  placeholder="e.g. 2348012345678"
-                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 bg-white font-mono text-slate-800 w-full max-w-xs focus:ring-1 focus:ring-amber-500 focus:outline-none"
-                />
-              </div>
-              <p className="text-[11px] text-slate-600 mt-1">
-                Default placeholder: +234 000 000 0000. Replace with official company number when provided.
-              </p>
-            </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right Column: Lead Capture Form */}
-          <div className="lg:col-span-7">
+          <ScrollReveal delayMs={150} className="lg:col-span-7">
             <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-10">
               {submitted ? (
                 <div className="py-12 text-center">
@@ -187,10 +208,10 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                    Enquiry Details Validated
+                    Enquiry Submitted Successfully
                   </h3>
                   <p className="text-sm text-slate-600 max-w-md mx-auto mb-6 leading-relaxed">
-                    Thank you, <strong className="text-slate-900">{formData.fullName}</strong>. Your enquiry for <strong className="text-slate-900">{formData.serviceRequired}</strong> was processed in this portfolio demonstration.
+                    Thank you, <strong className="text-slate-900">{formData.fullName}</strong>. Your message has been delivered to our engineering desk. We will review your power requirements for <strong className="text-slate-900">{formData.serviceRequired}</strong> and contact you shortly.
                   </p>
 
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-left max-w-md mx-auto mb-6 text-slate-700 space-y-1.5">
@@ -210,7 +231,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                       Submit Another Enquiry
                     </button>
                     <a
-                      href={getWhatsAppLink()}
+                      href={getSuccessWhatsAppLink()}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors"
@@ -359,15 +380,28 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                     )}
                   </div>
 
+                  {submitError && (
+                    <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2.5">
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-red-800">Submission Failed</p>
+                        <p className="mt-0.5 text-red-700 leading-relaxed">{submitError}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Submit Button */}
                   <div className="pt-2">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 disabled:opacity-60 rounded-xl transition-all shadow-md cursor-pointer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl transition-all shadow-md cursor-pointer"
                     >
                       {isSubmitting ? (
-                        <span>Validating Details...</span>
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                          <span>Sending to Formspree...</span>
+                        </>
                       ) : (
                         <>
                           <span>Submit Feasibility Request</span>
@@ -375,14 +409,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                         </>
                       )}
                     </button>
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      Client-side interactive demo. No third-party tracking or automated server emails are fired.
+                    <p className="text-[11px] text-slate-500 mt-2">
+                      Your enquiry will be securely transmitted directly to our team via Formspree.
                     </p>
                   </div>
                 </form>
               )}
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

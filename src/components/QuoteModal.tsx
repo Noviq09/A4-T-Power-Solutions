@@ -52,7 +52,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     const text = encodeURIComponent(
       `Hello A4&T Power Solutions,\n\nI would like to request a quote for: ${formData.service} (${formData.buildingType}).\nName: ${formData.name || 'Visitor'}\nPhone: ${formData.phone || 'N/A'}\nNotes: ${formData.briefNotes || 'Requesting consultation.'}`
     );
-    window.open(`https://wa.me/2340000000000?text=${text}`, '_blank');
+    window.open(`https://wa.me/2347079340080?text=${text}`, '_blank');
   };
 
   return (

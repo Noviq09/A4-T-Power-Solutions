@@ -2,6 +2,7 @@ import React from 'react';
 import { WHY_SOLAR_REASONS } from '../data/solarData';
 import { Sliders, BatteryMedium, Sparkles } from 'lucide-react';
 import whySolarSunset from '../assets/images/why_solar_sunset_backdrop_1793230332881.jpg';
+import { ScrollReveal } from './ScrollReveal';
 
 export const WhySolar: React.FC = () => {
   return (
@@ -25,7 +26,7 @@ export const WhySolar: React.FC = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
-        <div className="max-w-3xl mb-16">
+        <ScrollReveal className="max-w-3xl mb-16">
           <div className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-3">
             Why Transition to Solar
           </div>
@@ -35,33 +36,33 @@ export const WhySolar: React.FC = () => {
           <p className="text-base text-slate-300 leading-relaxed">
             Solar and battery backup technology offers a practical, modern alternative to frequent public grid disruptions and the mounting costs and noise of fossil fuel generators.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* 4 Reasons Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {WHY_SOLAR_REASONS.map((reason) => (
-            <div
-              key={reason.number}
-              className="bg-slate-900/80 backdrop-blur-md border border-slate-800/90 rounded-2xl p-8 hover:border-slate-700/90 hover:bg-slate-900/90 transition-all"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-amber-400 font-mono text-sm font-bold">
-                  {reason.number}
-                </span>
-                <span className="w-8 h-px bg-slate-800" />
-                <h3 className="text-xl font-bold text-white">
-                  {reason.title}
-                </h3>
+          {WHY_SOLAR_REASONS.map((reason, index) => (
+            <ScrollReveal key={reason.number} delayMs={index * 100}>
+              <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800/90 rounded-2xl p-8 hover:border-slate-700/90 hover:-translate-y-1 hover:bg-slate-900/95 transition-all duration-300 ease-out h-full">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-amber-400 font-mono text-sm font-bold">
+                    {reason.number}
+                  </span>
+                  <span className="w-8 h-px bg-slate-800" />
+                  <h3 className="text-xl font-bold text-white">
+                    {reason.title}
+                  </h3>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {reason.description}
+                </p>
               </div>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                {reason.description}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
         {/* Practical Comparison Strip */}
-        <div className="rounded-2xl border border-slate-800/90 bg-slate-900/70 backdrop-blur-md p-6 sm:p-8">
+        <ScrollReveal delayMs={200}>
+          <div className="rounded-2xl border border-slate-800/90 bg-slate-900/70 backdrop-blur-md p-6 sm:p-8 hover:border-slate-700/80 transition-colors duration-300">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-1">
               <h4 className="text-lg font-bold text-white mb-1">
@@ -105,6 +106,7 @@ export const WhySolar: React.FC = () => {
             </div>
           </div>
         </div>
+      </ScrollReveal>
       </div>
     </section>
   );

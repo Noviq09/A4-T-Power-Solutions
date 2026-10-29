@@ -6,7 +6,49 @@
   }
 }
 
-/* Custom smooth transitions and utility styles */
+/* Custom utility styles */
 .text-balance {
   text-wrap: balance;
+}
+
+/* Subtle Hero Entry Keyframes */
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-fade-up-1 {
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-hero-fade-up-2 {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.animate-hero-fade-up-3 {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+}
+
+.animate-hero-fade-up-4 {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+}
+
+.animate-hero-fade-up-5 {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.48s both;
+}
+
+/* Respect user's reduced-motion accessibility setting */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
