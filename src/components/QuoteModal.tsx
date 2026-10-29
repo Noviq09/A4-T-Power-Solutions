@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Send, CheckCircle2, MessageCircle } from 'lucide-react';
+import { X, Send, CheckCircle2, MessageCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { SERVICES } from '../data/solarData';
 
 interface QuoteModalProps {
@@ -24,6 +24,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -37,15 +39,67 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleClose = () => {
+    setSubmitted(false);
+    setSubmitError(null);
+    setIsSubmitting(false);
+    onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
     setErrors({});
-    setSubmitted(true);
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      const data = new FormData();
+      data.append('form_name', 'Request a Solar & Power Quote Modal');
+      data.append('name', formData.name.trim());
+      data.append('phone', formData.phone.trim());
+      data.append('email', formData.email.trim());
+      data.append('service', formData.service);
+      data.append('buildingType', formData.buildingType);
+      data.append('briefNotes', formData.briefNotes.trim() || 'No additional notes provided.');
+
+      const response = await fetch('https://formspree.io/f/xdeedvez', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: data,
+      });
+
+      if (response.ok) {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      } else {
+        const resData = await response.json().catch(() => null);
+        let errorMsg = 'Failed to submit quote request. Please check your details and try again.';
+        if (resData && Array.isArray(resData.errors) && resData.errors.length > 0) {
+          errorMsg = resData.errors
+            .map((err: { field?: string; message?: string }) =>
+              err.field ? `${err.field}: ${err.message}` : err.message
+            )
+            .filter(Boolean)
+            .join(', ') || errorMsg;
+        } else if (resData && typeof resData.error === 'string') {
+          errorMsg = resData.error;
+        }
+        setIsSubmitting(false);
+        setSubmitError(errorMsg);
+      }
+    } catch {
+      setIsSubmitting(false);
+      setSubmitError('Unable to connect to the quotation service. Please check your internet connection or use WhatsApp.');
+    }
   };
 
   const handleWhatsAppQuickSend = () => {
@@ -73,7 +127,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center justify-center transition-colors"
             aria-label="Close quote modal"
           >
@@ -88,26 +142,28 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <h4 className="text-lg font-bold text-slate-900 mb-1">
-                Quote Request Received (Demo)
+                Quote Request Received
               </h4>
-              <p className="text-xs text-slate-600 max-w-xs mx-auto mb-6">
-                Thank you, {formData.name}. In a production deployment, this would instantly alert the engineering estimation desk.
+              <p className="text-xs text-slate-600 max-w-xs mx-auto mb-5 leading-relaxed">
+                Thank you, {formData.name}. Your quote request for {formData.service} has been received. Our team will review your energy requirements and reach out to you shortly.
               </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-left max-w-xs mx-auto mb-6 text-slate-700 space-y-1">
+                <div><span className="text-slate-500 font-medium">Service:</span> {formData.service}</div>
+                <div><span className="text-slate-500 font-medium">Property:</span> {formData.buildingType}</div>
+                <div><span className="text-slate-500 font-medium">Contact Phone:</span> {formData.phone}</div>
+              </div>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <button
                   type="button"
-                  onClick={() => {
-                    setSubmitted(false);
-                    onClose();
-                  }}
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  onClick={handleClose}
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
                 >
                   Close Window
                 </button>
                 <button
                   type="button"
                   onClick={handleWhatsAppQuickSend}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
                   <span>Send via WhatsApp</span>
@@ -206,11 +262,21 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 />
               </div>
 
+              {submitError && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-800">Submission Failed</p>
+                    <p className="mt-0.5 text-red-700 leading-relaxed">{submitError}</p>
+                  </div>
+                </div>
+              )}
+
               <div className="pt-2 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={handleWhatsAppQuickSend}
-                  className="text-xs text-emerald-700 hover:text-emerald-800 font-medium inline-flex items-center gap-1"
+                  className="text-xs text-emerald-700 hover:text-emerald-800 font-medium inline-flex items-center gap-1 cursor-pointer"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
                   <span>Send via WhatsApp instead</span>
@@ -219,16 +285,24 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={onClose}
-                    className="px-3 py-2 text-xs font-medium text-slate-600 hover:text-slate-900"
+                    onClick={handleClose}
+                    className="px-3 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer"
+                    disabled={isSubmitting}
+                    className="px-5 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1.5"
                   >
-                    Submit Request
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <span>Submit Request</span>
+                    )}
                   </button>
                 </div>
               </div>

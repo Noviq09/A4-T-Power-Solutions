@@ -66,21 +66,22 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
     setIsSubmitting(true);
 
     try {
+      const data = new FormData();
+      data.append('form_name', 'Main Contact & Feasibility Form');
+      data.append('name', formData.fullName.trim());
+      data.append('fullName', formData.fullName.trim());
+      data.append('phone', formData.phone.trim());
+      data.append('email', formData.email.trim());
+      data.append('serviceRequired', formData.serviceRequired);
+      data.append('locationState', formData.locationState.trim() || 'Not specified');
+      data.append('message', formData.message.trim());
+
       const response = await fetch('https://formspree.io/f/xdeedvez', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.fullName,
-          fullName: formData.fullName,
-          phone: formData.phone,
-          email: formData.email,
-          serviceRequired: formData.serviceRequired,
-          locationState: formData.locationState || 'Not specified',
-          message: formData.message,
-        }),
+        body: data,
       });
 
       if (response.ok) {
@@ -150,14 +151,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                 Whether you need complete off-grid solar for a private villa, backup power for a commercial business, or routine maintenance on an existing solar installation, our team is ready to evaluate your requirements.
               </p>
 
-              {/* Verified vs Concept Notice */}
-              <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-5 mb-8 text-xs text-amber-950 space-y-2">
-                <div className="flex items-center gap-2 font-bold text-amber-900">
-                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>Portfolio Concept Demo Notice</span>
+              {/* Solar Consultation Note */}
+              <div className="bg-slate-100/90 border border-slate-200/90 rounded-xl p-5 mb-8 text-xs text-slate-700 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-slate-900">
+                  <Phone className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Direct Consultation &amp; System Assessment</span>
                 </div>
-                <p className="text-amber-900/90 leading-relaxed">
-                  This website is an independent portfolio redesign. Form submissions are validated in the browser for demonstration purposes. To connect directly, use the configured WhatsApp bridge below.
+                <p className="text-slate-600 leading-relaxed">
+                  Submit your facility load details for an estimated solar system sizing and quotation. Our team is available for both residential and commercial deployments across Nigeria.
                 </p>
               </div>
 
@@ -211,7 +212,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ initialService }
                     Enquiry Submitted Successfully
                   </h3>
                   <p className="text-sm text-slate-600 max-w-md mx-auto mb-6 leading-relaxed">
-                    Thank you, <strong className="text-slate-900">{formData.fullName}</strong>. Your message has been delivered to our engineering desk. We will review your power requirements for <strong className="text-slate-900">{formData.serviceRequired}</strong> and contact you shortly.
+                    Thank you, <strong className="text-slate-900">{formData.fullName}</strong>. Your enquiry for <strong className="text-slate-900">{formData.serviceRequired}</strong> has been received. Our team will review your power requirements and contact you shortly.
                   </p>
 
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-left max-w-md mx-auto mb-6 text-slate-700 space-y-1.5">
