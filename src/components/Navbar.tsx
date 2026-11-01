@@ -21,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestQuote }) => {
     { label: 'Home', href: '#home' },
     { label: 'About', href: '#about' },
     { label: 'Services', href: '#services' },
+    { label: 'Load Calculator', href: '#calculator' },
     { label: 'Projects', href: '#projects' },
     { label: 'Contact', href: '#contact' },
   ];

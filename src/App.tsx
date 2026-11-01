@@ -14,18 +14,22 @@ import { CTASection } from './components/CTASection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
+import { LoadCalculator } from './components/LoadCalculator';
 
 export default function App() {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<string | undefined>(undefined);
+  const [quoteNotes, setQuoteNotes] = useState<string | undefined>(undefined);
 
-  const handleOpenQuote = (serviceTitle?: string) => {
+  const handleOpenQuote = (serviceTitle?: string, initialNotes?: string) => {
     setSelectedService(serviceTitle);
+    setQuoteNotes(initialNotes);
     setIsQuoteOpen(true);
   };
 
   const handleCloseQuote = () => {
     setIsQuoteOpen(false);
+    setQuoteNotes(undefined);
   };
 
   return (
@@ -54,6 +58,13 @@ export default function App() {
         {/* Why Choose Solar Section */}
         <WhySolar />
 
+        {/* Interactive Load Calculator Section */}
+        <LoadCalculator
+          onRequestQuoteWithLoad={(loadSummary) =>
+            handleOpenQuote('Inverter & Battery Systems', loadSummary)
+          }
+        />
+
         {/* Project Gallery Concept Section */}
         <ProjectGallery onRequestQuote={() => handleOpenQuote()} />
 
@@ -72,6 +83,7 @@ export default function App() {
         isOpen={isQuoteOpen}
         onClose={handleCloseQuote}
         preselectedService={selectedService}
+        initialNotes={quoteNotes}
       />
     </div>
   );

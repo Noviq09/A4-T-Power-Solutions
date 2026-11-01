@@ -6,12 +6,14 @@ interface QuoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   preselectedService?: string;
+  initialNotes?: string;
 }
 
 export const QuoteModal: React.FC<QuoteModalProps> = ({
   isOpen,
   onClose,
   preselectedService,
+  initialNotes,
 }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -19,8 +21,25 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     email: '',
     service: preselectedService || SERVICES[0].title,
     buildingType: 'Residential',
-    briefNotes: '',
+    briefNotes: initialNotes || '',
   });
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (initialNotes) {
+        setFormData((prev) => ({
+          ...prev,
+          briefNotes: initialNotes,
+          service: preselectedService || prev.service,
+        }));
+      } else if (preselectedService) {
+        setFormData((prev) => ({
+          ...prev,
+          service: preselectedService,
+        }));
+      }
+    }
+  }, [isOpen, initialNotes, preselectedService]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);

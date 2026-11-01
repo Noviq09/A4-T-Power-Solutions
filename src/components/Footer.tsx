@@ -40,6 +40,9 @@ export const Footer: React.FC<FooterProps> = ({ onSelectService }) => {
                 <a href="#services" className="hover:text-amber-400 transition-colors">Services</a>
               </li>
               <li>
+                <a href="#calculator" className="hover:text-amber-400 transition-colors">Load Calculator</a>
+              </li>
+              <li>
                 <a href="#projects" className="hover:text-amber-400 transition-colors">Project Gallery</a>
               </li>
               <li>
